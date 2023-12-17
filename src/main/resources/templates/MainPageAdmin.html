@@ -16,7 +16,6 @@
             flex-direction: column;
             min-height: 100vh;
         }
-
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
@@ -191,6 +190,40 @@
         .post-actions button:hover {
             text-decoration: none; /* Remove underline on hover */
         }
+        .users-container {
+            position: fixed;
+            top: 120px;
+            left: 80px; /* Adjust the left position as needed */
+            text-align: left;
+            padding: 16px;
+            box-sizing: border-box;
+            background-color: white;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 2;
+            width: 290px;
+            margin-top: 20px;
+            border-radius: 8px;
+        }
+
+        .users-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .users-list-item {
+            padding: 8px;
+        }
+
+        .users-list-item a {
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .users-list-item a:hover {
+            text-decoration: underline;
+        }
         .post-section {
             padding: 16px;
             box-sizing: border-box;
@@ -198,7 +231,7 @@
             border-bottom: none;
         }
 
-        .post-section {
+        .post-section .post-info {
             color: #555;
             font-size: 12px;
             margin-bottom: 8px;
@@ -229,27 +262,41 @@
 
     <div class="posts-container">
         <div th:each="post : ${posts}" class="post-section">
-            <div class="post-info"><span th:text="${post.getAccount().getName()} + ' ' + ${post.getAccount().getSurname()}"></span> posted:</div>
+            <div class="post-info">
+                <span th:text="${post.getAccount().getName()} + ' ' + ${post.getAccount().getSurname()}"></span> posted:
+            </div>
             <p th:text="${post.getPostMessage()}"></p>
             <div class="post-actions">
-            <form th:if="${post.getAccount().getId() == user.getId()}" th:action="@{'/deletePost/' + ${post.id}}" method="post">
-                <button class="delete-icon" type="submit">🗑️ Delete</button>
-            </form>
+                <form th:action="@{'/deletePost/' + ${post.id}}" method="post">
+                    <button class="delete-icon" type="submit">🗑️ Delete </button>
+                </form>
             </div>
         </div>
     </div>
 </main>
 
 <div class="account-section">
-    <h3 th:text="${user.getName() + ' ' + user.getSurname()}"></h3>
+    <h3 th:text = "${user.getName() + ' ' + user.getSurname()}"></h3>
     <ul>
         <li><a href="/viewAccount">View Your Profile</a></li>
         <li><a href="/editAccount">Edit Your Profile</a></li>
         <li><a href="/changePassword">Change Password</a></li>
     </ul>
 </div>
+<div class="users-container">
+    <h3>All Users</h3>
+    <ul class="users-list">
+        <!-- Iterate through the list of users -->
+        <th:block th:each="user : ${allUsers}">
+            <li class="users-list-item">
+                <a th:href="@{'/viewUser/' + ${user.getId()}}">View: <span th:text="${user.getName() + ' ' + user.getSurname()}"></span></a>
+            </li>
+        </th:block>
+    </ul>
+</div>
 
 <script>
+
 
 </script>
 

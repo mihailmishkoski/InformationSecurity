@@ -1,5 +1,6 @@
 package mk.ukim.finki.wp_aud1.web.controller;
 
+import jakarta.servlet.http.HttpSession;
 import mk.ukim.finki.wp_aud1.model.Account;
 import mk.ukim.finki.wp_aud1.service.AccountService;
 import org.springframework.stereotype.Controller;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/login")
+@SessionAttributes("account")
 public class LogInController {
 
     private final AccountService as;
@@ -15,8 +17,6 @@ public class LogInController {
     {
         this.as = as;
     }
-
-
 
 
     @RequestMapping(method = {RequestMethod.GET, RequestMethod.POST})
@@ -29,6 +29,7 @@ public class LogInController {
             {
                 Account account = as.findByEmail(email);
                 as.generateOtp(account);
+
                 model.addAttribute("account",account);
                 return "twoFactorPage";
             }
@@ -40,11 +41,14 @@ public class LogInController {
     @PostMapping("/twoFactor")
     public String twoFactorAuthentication(@RequestParam Integer code,
                                           @RequestParam String email,
+                                          HttpSession session,
                                           Model model)
     {
-        if(code == as.findByEmail(email).getTwoFactorcode())
+        Account acc = as.findByEmail(email);
+        if(code == acc.getTwoFactorcode())
         {
-            return "MainPage";
+            session.setAttribute("account",acc);
+            return "redirect:/home";
         }
         model.addAttribute("errorMessage","No user found with those credentials");
         return "logInPage";
@@ -99,7 +103,7 @@ public class LogInController {
             }
             model.addAttribute("error","Username already exists");
         }
-            return "createAccount";
+        return "createAccount";
 
     }
 }

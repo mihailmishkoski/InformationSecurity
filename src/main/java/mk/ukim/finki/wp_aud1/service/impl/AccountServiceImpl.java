@@ -2,7 +2,7 @@ package mk.ukim.finki.wp_aud1.service.impl;
 
 import mk.ukim.finki.wp_aud1.bootstrap.DataHolder;
 import mk.ukim.finki.wp_aud1.model.Account;
-import mk.ukim.finki.wp_aud1.repository.InMemoryAccountRepository;
+import mk.ukim.finki.wp_aud1.model.Role;
 import mk.ukim.finki.wp_aud1.repository.jpa.AccountJpa;
 import mk.ukim.finki.wp_aud1.security.PasswordHashing;
 import mk.ukim.finki.wp_aud1.service.AccountService;
@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
 
 @Service
 public class AccountServiceImpl implements AccountService {
-    private final InMemoryAccountRepository imar;
+
 
     private final AccountJpa accountJpa;
 
@@ -24,9 +24,8 @@ public class AccountServiceImpl implements AccountService {
 
 
     private final JavaMailSender javaMailSender;
-    public AccountServiceImpl(InMemoryAccountRepository imar, AccountJpa accountJpa, PasswordHashing ph,JavaMailSender javaMailSender)
+    public AccountServiceImpl(AccountJpa accountJpa, PasswordHashing ph,JavaMailSender javaMailSender)
     {
-        this.imar = imar;
         this.accountJpa = accountJpa;
         this.ph = ph;
         this.javaMailSender = javaMailSender;
@@ -37,7 +36,7 @@ public class AccountServiceImpl implements AccountService {
         String key = email;
         if (!DataHolder.credentialsMap.containsKey(key)) {
             String encodedPassword = ph.passwordEncoder().encode(password);
-            Account newAccount = new Account(name, surname, username, country, email, encodedPassword);
+            Account newAccount = new Account(name, surname, username, country, email, encodedPassword, Role.USER);
             DataHolder.credentialsMap.put(key, newAccount);
             accountJpa.save(newAccount);//here is saving in database
             return true;
@@ -82,7 +81,7 @@ public class AccountServiceImpl implements AccountService {
             SimpleMailMessage msg = new SimpleMailMessage();
             String email = account.getEmail();
             msg.setTo(email);
-        msg.setFrom("dmgameplays829@gmail.com");
+        msg.setFrom("dmgameplays829@gmail");
 
         msg.setSubject("Welcome");
             msg.setText("Hello \n\n" +"Your Login OTP: " + randomPIN + " Please Verify.");
@@ -96,5 +95,65 @@ public class AccountServiceImpl implements AccountService {
         return DataHolder.credentialsMap.get(email);
     }
 
+    @Override
+    public void editAccount(Account account, String name, String surname, String country, String email)
+    {
+//        StringBuilder sb = new StringBuilder();
+//        if(!ph.passwordEncoder().matches(currentPassword,account.getPassword()))
+//        {
+//            sb.append("Password does not match!");
+//            sb.append("\n");
+//        }
+//        if(!newPassword.matches(repeatedPassword))
+//        {
+//            sb.append("New or repeated password do not match!");
+//            sb.append("\n");
+//        }
+//        if(!isValidPassword(newPassword))
+//        {
+//            sb.append("Password is not strong, use at least one special sign, one upper letter, one number and it needs to be longer than 8 characters!");
+//            sb.append("\n");
+//        }
+//        if(!isValidEmail(email))
+//        {
+//            sb.append("Email is not in valid format!");
+//            sb.append("\n");
+//        }
+//        if(sb.isEmpty())
+//        {
+            account.setName(name);
+            account.setSurname(surname);
+            account.setEmail(email);
+            account.setCountry(country);
+            accountJpa.save(account);
+//        }
+//        return sb;
+    }
+    @Override
+    public StringBuilder changePassword(Account account, String currentPassword, String newPassword, String repeatedPassword)
+    {
+        StringBuilder sb = new StringBuilder();
+        if(!ph.passwordEncoder().matches(currentPassword,account.getPassword()))
+        {
+            sb.append("Current password is not correct!");
+            sb.append("\n");
+        }
+        if(!newPassword.matches(repeatedPassword))
+        {
+            sb.append("New or repeated password do not match!");
+            sb.append("\n");
+        }
+        if(!isValidPassword(newPassword))
+        {
+            sb.append("Password is not strong, use at least one special sign, one upper letter, one number and it needs to be longer than 8 characters!");
+            sb.append("\n");
+        }
+        if(sb.isEmpty())
+        {
+            account.setPassword(ph.passwordEncoder().encode(newPassword));
+            accountJpa.save(account);
+        }
+        return sb;
+    }
 
 }
