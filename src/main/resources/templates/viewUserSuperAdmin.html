@@ -163,24 +163,26 @@
 
 <main>
     <form th:action="@{'/changePrivileges/' + ${user.getId()}}"  method="post">
-    <div class="profile-info">
-        <h2><span class="label">Name:</span> <span th:text="${user.getName()}"></span></h2>
-        <p><span class="label">Surname:</span> <span th:text="${user.getSurname()}"></span></p>
-        <p><span class="label">Country:</span> <span th:text="${user.getCountry()}"></span></p>
-        <p><span class="label">Email:</span> <span th:text="${user.getEmail()}"></span></p>
-        <p><span class="label">Username:</span> <span th:text="${user.getUsername()}"></span></p>
-        <select id="role" name="role" th:disabled="${user.role == T(mk.ukim.finki.wp_aud1.model.Role).ADMIN or user.role == T(mk.ukim.finki.wp_aud1.model.Role).SUPER_ADMIN}">
-            <option value="0" th:selected="${user.role == T(mk.ukim.finki.wp_aud1.model.Role).USER}">Standard User</option>
-            <option value="1" th:selected="${user.role == T(mk.ukim.finki.wp_aud1.model.Role).ADMIN}">Admin</option>
+        <div class="profile-info">
+            <h2><span class="label">Name:</span> <span th:text="${user.getName()}"></span></h2>
+            <p><span class="label">Surname:</span> <span th:text="${user.getSurname()}"></span></p>
+            <p><span class="label">Country:</span> <span th:text="${user.getCountry()}"></span></p>
+            <p><span class="label">Email:</span> <span th:text="${user.getEmail()}"></span></p>
+            <p><span class="label">Username:</span> <span th:text="${user.getUsername()}"></span></p>
+            <select id="role" name="role" th:disabled="${user.role == T(mk.ukim.finki.wp_aud1.model.Role).SUPER_ADMIN}">
+                <option value="0" th:selected="${user.role == T(mk.ukim.finki.wp_aud1.model.Role).USER}">Standard User</option>
+                <option value="1" th:selected="${user.role == T(mk.ukim.finki.wp_aud1.model.Role).ADMIN}">Admin</option>
+                <option value="2" th:selected="${user.role == T(mk.ukim.finki.wp_aud1.model.Role).SUPER_ADMIN}">Super Admin</option>
+            </select>
+            <button type="submit" th:disabled="${user.role == T(mk.ukim.finki.wp_aud1.model.Role).SUPER_ADMIN}">Update</button>
 
 
-        </select>
-        <button type="submit" th:disabled="${user.role == T(mk.ukim.finki.wp_aud1.model.Role).ADMIN or user.role == T(mk.ukim.finki.wp_aud1.model.Role).SUPER_ADMIN}">Update</button>
-
-
-    </div>
+        </div>
     </form>
-
+    <form class="delete-account-form" th:action="@{'/deleteAccount/' + ${user.getId()}}" method="post">
+        <textarea id="reason" name="reason" placeholder="Reason for account deletion" th:disabled="${user.role == T(mk.ukim.finki.wp_aud1.model.Role).SUPER_ADMIN}"></textarea>
+        <button type="submit" th:disabled="${user.role == T(mk.ukim.finki.wp_aud1.model.Role).SUPER_ADMIN}">Delete Account</button>
+    </form>
 </main>
 
 

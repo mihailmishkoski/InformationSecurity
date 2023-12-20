@@ -34,7 +34,7 @@ public class Account implements Serializable {
 
     private int twoFactorcode;
 
-    @OneToMany(mappedBy = "account", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "account", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private List<Post> posts;
 
     private Role role;
@@ -62,6 +62,9 @@ public class Account implements Serializable {
                 ", posts=" + posts +
                 ", role=" + role +
                 '}';
+    }
+    public Role getRoleEnum() {
+        return Role.values()[this.getRole().ordinal()];
     }
 
 

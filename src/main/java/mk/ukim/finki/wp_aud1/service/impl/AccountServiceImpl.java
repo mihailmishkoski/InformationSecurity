@@ -81,9 +81,9 @@ public class AccountServiceImpl implements AccountService {
             SimpleMailMessage msg = new SimpleMailMessage();
             String email = account.getEmail();
             msg.setTo(email);
-        msg.setFrom("dmgameplays829@gmail");
+            msg.setFrom("dmgameplays829@gmail");
 
-        msg.setSubject("Welcome");
+             msg.setSubject("Welcome");
             msg.setText("Hello \n\n" +"Your Login OTP: " + randomPIN + " Please Verify.");
 
             javaMailSender.send(msg);
@@ -154,6 +154,25 @@ public class AccountServiceImpl implements AccountService {
             accountJpa.save(account);
         }
         return sb;
+    }
+    @Override
+    public void deleteAccount(Account acc, String reason){
+        SimpleMailMessage msg = new SimpleMailMessage();
+        String email = acc.getEmail();
+        msg.setTo(email);
+        msg.setFrom("dmgameplays829@gmail");
+
+        if (reason != null && !reason.isEmpty()) {
+
+            msg.setSubject("Account Deletion");
+            msg.setText("Hello,\n\nYour account has been deleted. Reason: " + reason);
+        } else {
+
+            msg.setSubject("Account Deletion");
+            msg.setText("Hello,\n\nYour account has been deleted.");
+        }
+        javaMailSender.send(msg);
+        accountJpa.delete(acc);
     }
 
 }

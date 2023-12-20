@@ -15,4 +15,6 @@ public interface AccountService {
 
     void editAccount(Account account, String name, String surname, String country, String email);
     StringBuilder changePassword(Account acc, String currentPassword, String newPassword, String repeatedPassword);
+
+    void deleteAccount(Account acc, String reason);
 }
