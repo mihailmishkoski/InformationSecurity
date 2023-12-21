@@ -34,6 +34,8 @@ public class Account implements Serializable {
 
     private int twoFactorcode;
 
+
+
     @OneToMany(mappedBy = "account", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private List<Post> posts;
 

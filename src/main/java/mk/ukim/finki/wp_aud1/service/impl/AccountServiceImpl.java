@@ -32,16 +32,20 @@ public class AccountServiceImpl implements AccountService {
     }
     @Transactional
     @Override
-    public boolean create(String name, String surname, String username, String country, String email, String password) {
-        String key = email;
-        if (!DataHolder.credentialsMap.containsKey(key)) {
+    public Account create(String name, String surname, String username, String country, String email, String password) {
+//        String key = emailA;
+//        if (!DataHolder.credentialsMap.containsKey(key)) {
             String encodedPassword = ph.passwordEncoder().encode(password);
             Account newAccount = new Account(name, surname, username, country, email, encodedPassword, Role.USER);
-            DataHolder.credentialsMap.put(key, newAccount);
-            accountJpa.save(newAccount);//here is saving in database
-            return true;
-        }
-        return false;
+            DataHolder.credentialsMap.put(email, newAccount);
+            return accountJpa.save(newAccount);//here is saving in database
+//            return true;
+
+    }
+    @Override
+    public boolean isEmailUnique(String email)
+    {
+        return !DataHolder.credentialsMap.containsKey(email);
     }
 
     @Override
@@ -74,7 +78,6 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public void generateOtp(Account account) {
-
             int randomPIN = (int) (Math.random() * 9000) + 1000;
             account.setTwoFactorcode(randomPIN);
             accountJpa.save(account);
@@ -83,11 +86,10 @@ public class AccountServiceImpl implements AccountService {
             msg.setTo(email);
             msg.setFrom("dmgameplays829@gmail");
 
-             msg.setSubject("Welcome");
+            msg.setSubject("Welcome");
             msg.setText("Hello \n\n" +"Your Login OTP: " + randomPIN + " Please Verify.");
 
             javaMailSender.send(msg);
-
     }
     @Override
     public Account findByEmail(String email)
@@ -173,6 +175,29 @@ public class AccountServiceImpl implements AccountService {
         }
         javaMailSender.send(msg);
         accountJpa.delete(acc);
+    }
+    public int mailVerification(String user_email)
+    {
+        int randomPIN = (int) (Math.random() * 9000) + 1000;
+        SimpleMailMessage msg = new SimpleMailMessage();
+        msg.setTo(user_email);
+        msg.setFrom("dmgameplays829@gmail");
+
+        msg.setSubject("Welcome");
+        msg.setText("Hello \n\n" +"Your Email Verification Code: " + randomPIN + " Please Verify.");
+        javaMailSender.send(msg);
+        return randomPIN;
+    }
+    @Override
+    public void delete(Long id)
+    {
+        accountJpa.delete(accountJpa.findById(id).orElse(null));
+    }
+
+    @Override
+    public Account findById(Long id)
+    {
+        return accountJpa.findById(id).orElse(null);
     }
 
 }

@@ -28,7 +28,8 @@ public class AdminController {
     @PostMapping("/changePrivileges/{userId}")
     public String changePrivileges(@PathVariable Long userId, @RequestParam Long role, Model model) {
 
-        Account this_account =(Account) model.getAttribute("account");
+        Account account = (Account) model.getAttribute("account");
+        Account this_account =(Account) accRepository.findById(account.getId()).orElse(null);
 
         if(this_account.getRole().equals(Role.ADMIN) || this_account.getRole().equals(Role.SUPER_ADMIN))
         {

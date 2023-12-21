@@ -31,6 +31,7 @@ public class MainPageController {
     {
         Account account = (Account) model.getAttribute("account");
         Account updated_account = accountRepository.findById(account.getId()).orElse(null);
+        model.addAttribute("account",account);
         List<Post> posts = new ArrayList<>();
         posts = postRepository.findAll();
         Collections.reverse(posts);
@@ -63,14 +64,14 @@ public class MainPageController {
     @GetMapping("/viewUser/{userId}")
     public String viewUser(@PathVariable Long userId, Model model){
         Account account = (Account) model.getAttribute("account");
-        Account this_user = accountRepository.findById(account.getId()).orElse(null);
+        Account updated_account = accountRepository.findById(account.getId()).orElse(null);
         Account acc = accountRepository.findById(userId).orElse(null);
         model.addAttribute("user",acc);
-        if(this_user.getRole().equals(Role.ADMIN))
+        if(updated_account.getRole().equals(Role.ADMIN))
         {
             return "viewUser";
         }
-        if(this_user.getRole().equals(Role.SUPER_ADMIN))
+        if(updated_account.getRole().equals(Role.SUPER_ADMIN))
         {
             return "viewUserSuperAdmin";
         }
